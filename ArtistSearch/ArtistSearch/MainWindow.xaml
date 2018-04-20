@@ -5,18 +5,23 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ArtistSearch"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="600">
+        Title="MainWindow" Height="450" Width="900">
     <TabControl>
-        <TabItem Header="Artist Search" Height="30">
-
+        <TabItem Header="Search">
             <Grid Margin="10">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition></ColumnDefinition>
+                    <ColumnDefinition></ColumnDefinition>
+                    <ColumnDefinition></ColumnDefinition>
                 </Grid.ColumnDefinitions>
-                <StackPanel>
+                <Grid.RowDefinitions>
+                    <RowDefinition></RowDefinition>
+                    <RowDefinition></RowDefinition>
+                    <RowDefinition></RowDefinition>
+                </Grid.RowDefinitions>
+                <StackPanel Grid.Column="0" Grid.Row="0" VerticalAlignment="Center">
 
-                    <Label Content="Artist Search" FontSize="30"/>
+                    <Label Content="Artist Search" FontSize="30" HorizontalAlignment="Center"/>
 
                     <StackPanel Orientation="Horizontal">
                         <Label Content="Enter Artist:" FontSize="14"/>
@@ -26,12 +31,15 @@
 
                     <TextBlock Name="TbkErrorOutput" TextWrapping="Wrap" FontSize="16"/>
 
-                    <ListBox Name="LbxMatchingArtists" HorizontalAlignment="Left" Height="280"  Width="276"/>
                 </StackPanel>
+                <ListBox Name="LbxMatchingArtists" Grid.Row="1" Grid.Column="0" Grid.RowSpan="2" Margin="10" SelectionChanged="LbxMatchingArtists_SelectionChanged"/>
+                <Label Content="Albums" FontSize="30" HorizontalAlignment="Center" Grid.Row="0" Grid.Column="1" VerticalAlignment="Center"/>
+                <ListBox Name="LbxMatchingAlbums" Grid.Row="1" Grid.Column="1" Grid.RowSpan="2" Margin="10" SelectionChanged="LbxMatchingAlbums_SelectionChanged"/>
+                <Label Content="Songs" FontSize="30" HorizontalAlignment="Center" Grid.Row="0" Grid.Column="2" VerticalAlignment="Center"/>
+                <ListBox Name="LbxMatchingSongs" Grid.Row="1" Grid.Column="2" Grid.RowSpan="2" Margin="10"/>
             </Grid>
         </TabItem>
-        <TabItem Header="Add Artist">
-
-        </TabItem>
+        <TabItem Header="Add Artist"></TabItem>
+        <TabItem Header="Edit Artist"></TabItem>
     </TabControl>
 </Window>

@@ -20,7 +20,7 @@ namespace ArtistSearch
     /// </summary>
     public partial class MainWindow : Window
     {
-        private List<Artist> artistsList = new List<Artist>();
+        private readonly Program _appInstance = new Program();
 
         public MainWindow()
         {
@@ -29,41 +29,17 @@ namespace ArtistSearch
 
         private void BtnSearchArtist_Click(object sender, RoutedEventArgs e)
         {
-            //If theres an arist entered
-            if (TbxEnterArtist.Text.Length > 0)
-            {
-                //Run Query to search DynamoDB artist table for matching artists
-                artistsList = GetMatchingArtists(TbxEnterArtist.Text);
-
-                //Output number of matching artists found to TbkErrorOutput
-                TbkErrorOutput.Foreground = new SolidColorBrush(Colors.Green);
-                TbkErrorOutput.Text = (artistsList.Count + " matching artists found");
-
-                //Output all matching artists to LbxMatchingArtists
-            }
-            else
-            {
-                //Output error because no search term
-                TbkErrorOutput.Foreground = new SolidColorBrush(Colors.Red);
-                TbkErrorOutput.Text = "Please enter an aritst name";
-            }
-        }
-        private List<Artist> GetMatchingArtists(string searchTerm)
-        {
-            List<Artist> matchingArtists = new List<Artist>();
-
-            return matchingArtists;
+            LbxMatchingArtists.Items.Add(_appInstance.DbGetArtists(TbxEnterArtist.Text));
         }
 
-        class Artist
+        private void LbxMatchingArtists_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            public string Name { get; set; }
-            public List<Album> Albums { get; set; }
+            _appInstance.DbGetAlbums(LbxMatchingArtists.SelectedItem as string);
         }
-        class Album
+
+        private void LbxMatchingAlbums_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            public string AlbumTitle { get; set; }
-            public List<string> Songs { get; set; }
+
         }
     }
 }
