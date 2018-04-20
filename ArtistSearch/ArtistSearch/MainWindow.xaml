@@ -5,8 +5,33 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ArtistSearch"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
-        
-    </Grid>
+        Title="MainWindow" Height="450" Width="600">
+    <TabControl>
+        <TabItem Header="Artist Search" Height="30">
+
+            <Grid Margin="10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel>
+
+                    <Label Content="Artist Search" FontSize="30"/>
+
+                    <StackPanel Orientation="Horizontal">
+                        <Label Content="Enter Artist:" FontSize="14"/>
+                        <TextBox Name="TbxEnterArtist" TextWrapping="Wrap" Width="120" VerticalAlignment="Center"/>
+                        <Button x:Name="BtnSearchArtist" Content="Search" VerticalAlignment="Center" Width="60" Margin="10,0,0,0" Click="BtnSearchArtist_Click"/>
+                    </StackPanel>
+
+                    <TextBlock Name="TbkErrorOutput" TextWrapping="Wrap" FontSize="16"/>
+
+                    <ListBox Name="LbxMatchingArtists" HorizontalAlignment="Left" Height="280"  Width="276"/>
+                </StackPanel>
+            </Grid>
+        </TabItem>
+        <TabItem Header="Add Artist">
+
+        </TabItem>
+    </TabControl>
 </Window>
