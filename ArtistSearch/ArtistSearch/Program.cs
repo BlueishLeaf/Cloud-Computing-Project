@@ -16,9 +16,45 @@ namespace ArtistSearch
     {
         private static readonly AmazonDynamoDBClient Client = new AmazonDynamoDBClient(new AmazonDynamoDBConfig { RegionEndpoint = RegionEndpoint.EUWest1 });
 
-        public string DbGetArtists(string artist)
+        public List<string> DbGetArtists(string a)
         {
-            return Table.LoadTable(Client, "Artists").GetItem(artist)["Artist"];
+            //return Table.LoadTable(Client, "Artists").GetItem(artist)["Artist"];
+
+            try
+            {
+                //Artist name to lower
+                string artist = a.ToLower();
+                Console.WriteLine("Getting matching artists containing " + a);
+
+                //Load artists table
+                var table = Table.LoadTable(Client, "Artists");
+
+                //Filter for query. Artist column matches artist input
+                ScanFilter filter = new ScanFilter();
+                filter.AddCondition("ArtistName", ScanOperator.Contains, artist);
+                Console.WriteLine("Filter created");
+
+                //Response
+                var response = table.Scan(filter).GetNextSet();
+                Console.WriteLine("scan completed");
+
+                //List to hold output of found artists
+                List<string> foundArtists = new List<string>();
+
+                foreach (var item in response.ToArray())
+                {
+                    var currentItem = ((item.ToArray())[0].ToString().Split(','))[1].TrimEnd(']');
+                    foundArtists.Add(currentItem.ToString());
+                    Console.WriteLine(currentItem.ToString());
+                }
+
+                return foundArtists;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+                return null;
+            }
         }
 
         public void DbGetAlbums(string artist)

@@ -27,14 +27,20 @@ namespace ArtistSearch
             InitializeComponent();
         }
 
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+        }
+
         private void BtnSearchArtist_Click(object sender, RoutedEventArgs e)
         {
-            LbxMatchingArtists.Items.Add(_appInstance.DbGetArtists(TbxEnterArtist.Text));
+            LbxMatchingArtists.ItemsSource = "";
+            LbxMatchingArtists.ItemsSource = _appInstance.DbGetArtists(TbxEnterArtist.Text);
+            TbkErrorOutput.Text = LbxMatchingArtists.Items.Count + " artists found";
         }
 
         private void LbxMatchingArtists_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            _appInstance.DbGetAlbums(LbxMatchingArtists.SelectedItem as string);
+            //_appInstance.DbGetAlbums(LbxMatchingArtists.SelectedItem as string);
         }
 
         private void LbxMatchingAlbums_SelectionChanged(object sender, SelectionChangedEventArgs e)
