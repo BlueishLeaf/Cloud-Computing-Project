@@ -26,7 +26,7 @@ namespace ArtistSearch
                 //Load artists table
                 var table = Table.LoadTable(Client, "Artists");
 
-                //Filter for query. Artist column matches artist input
+                //Filter for scan. Artist column matches artist input
                 ScanFilter filter = new ScanFilter();
                 filter.AddCondition("ArtistName", ScanOperator.Contains, artist);
 
@@ -50,8 +50,44 @@ namespace ArtistSearch
                 return null;
             }
         }
+        public List<Album> DbGetAlbums(Artist artist)
+        {
+            try
+            {
+                //Artist name + id = key to table
+                string artistNameID = (artist.ArtistName + " " + artist.ArtistID);
 
-        public void DbGetAlbums(string artist)
+                Console.WriteLine(artistNameID);
+
+                //Load albums table
+                var table = Table.LoadTable(Client, "Albums");
+
+                //Filter for query. Artist column matches artist input
+                QueryFilter filter = new QueryFilter();
+                filter.AddCondition("ArtistNameID", QueryOperator.Equal, artistNameID);
+
+                //Response
+                List<Document> response = table.Query(filter).GetNextSet();
+
+                //List to contain found artists
+                List<Album> foundAlbums = new List<Album>();
+
+                //Loop through each item in the response and map it to a new Artist in the artist list
+                foreach (Document item in response)
+                {
+                    foundAlbums.Add(new Album() { AlbumName = item["AlbumName"] });
+                }
+
+                return foundAlbums;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+                return null;
+            }
+        }
+
+        /*public void DbGetAlbums(string artist)
         {
             Console.WriteLine(artist);
             var table = Table.LoadTable(Client, "Albums");
@@ -64,6 +100,6 @@ namespace ArtistSearch
                 Console.WriteLine(item);
                 Console.WriteLine("lel");
             }
-        }
+        }*/
     }
 }

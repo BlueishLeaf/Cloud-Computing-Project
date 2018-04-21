@@ -21,6 +21,12 @@ namespace ArtistSearch
     }
     class Album
     {
-        public string AlbumTitle { get; set; }
+        public string AlbumName { get; set; }
+        public List<string> Songs { get; set; }
+
+        public override string ToString()
+        {
+            return this.AlbumName;
+        }
     }
 }

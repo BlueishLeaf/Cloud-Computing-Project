@@ -40,7 +40,11 @@ namespace ArtistSearch
 
         private void LbxMatchingArtists_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            //_appInstance.DbGetAlbums(LbxMatchingArtists.SelectedItem as string);
+            Artist selectedArtist = LbxMatchingArtists.SelectedItem as Artist;
+
+            selectedArtist.Albums = _appInstance.DbGetAlbums(selectedArtist);
+
+            LbxMatchingAlbums.ItemsSource = selectedArtist.Albums;
         }
 
         private void LbxMatchingAlbums_SelectionChanged(object sender, SelectionChangedEventArgs e)
