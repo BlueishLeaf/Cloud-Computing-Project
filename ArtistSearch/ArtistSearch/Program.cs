@@ -16,15 +16,12 @@ namespace ArtistSearch
     {
         private static readonly AmazonDynamoDBClient Client = new AmazonDynamoDBClient(new AmazonDynamoDBConfig { RegionEndpoint = RegionEndpoint.EUWest1 });
 
-        public List<string> DbGetArtists(string a)
+        public List<Artist> DbGetArtists(string a)
         {
-            //return Table.LoadTable(Client, "Artists").GetItem(artist)["Artist"];
-
             try
             {
                 //Artist name to lower
                 string artist = a.ToLower();
-                Console.WriteLine("Getting matching artists containing " + a);
 
                 //Load artists table
                 var table = Table.LoadTable(Client, "Artists");
@@ -32,20 +29,17 @@ namespace ArtistSearch
                 //Filter for query. Artist column matches artist input
                 ScanFilter filter = new ScanFilter();
                 filter.AddCondition("ArtistName", ScanOperator.Contains, artist);
-                Console.WriteLine("Filter created");
 
                 //Response
-                var response = table.Scan(filter).GetNextSet();
-                Console.WriteLine("scan completed");
+                List<Document> response = table.Scan(filter).GetNextSet();
 
-                //List to hold output of found artists
-                List<string> foundArtists = new List<string>();
+                //List to contain found artists
+                List<Artist> foundArtists = new List<Artist>();
 
-                foreach (var item in response.ToArray())
+                //Loop through each item in the response and map it to a new Artist in the artist list
+                foreach (Document item in response)
                 {
-                    var currentItem = ((item.ToArray())[0].ToString().Split(','))[1].TrimEnd(']');
-                    foundArtists.Add(currentItem.ToString());
-                    Console.WriteLine(currentItem.ToString());
+                    foundArtists.Add(new Artist() { ArtistName = item["ArtistName"], ArtistID = int.Parse(item["ArtistID"]) });
                 }
 
                 return foundArtists;
