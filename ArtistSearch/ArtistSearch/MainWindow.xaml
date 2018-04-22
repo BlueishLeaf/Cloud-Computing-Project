@@ -5,8 +5,45 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ArtistSearch"
         mc:Ignorable="d"
-        Loaded="Window_Loaded"
         Title="MainWindow" Height="450" Width="900">
+    <Window.Resources>
+        <DataTemplate x:Key="ArtistBoxTemplate">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="3*"></ColumnDefinition>
+                    <ColumnDefinition></ColumnDefinition>
+                    <ColumnDefinition></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" VerticalAlignment="Center" Text="{Binding (local:Artist.ArtistName)}"></TextBlock>
+                <Button x:Name="DeleteArtistBtn" Click="BtnDeleteArtist_Click" Grid.Column="2" VerticalAlignment="Center" Margin="2">Delete</Button>
+                <!--<Button x:Name="EditArtistBtn" Click="BtnEditArtist_Click" Grid.Column="1" VerticalAlignment="Center" Margin="2">Edit</Button>-->
+            </Grid>
+        </DataTemplate>
+        <DataTemplate x:Key="AlbumBoxTemplate">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="3*"></ColumnDefinition>
+                    <ColumnDefinition></ColumnDefinition>
+                    <ColumnDefinition></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" VerticalAlignment="Center" Text="{Binding (local:Album.AlbumName)}"></TextBlock>
+                <Button x:Name="DeleteAlbumBtn" Click="BtnDeleteAlbum_Click" Grid.Column="2" VerticalAlignment="Center" Margin="2">Delete</Button>
+                <!--<Button x:Name="EditAlbumBtn" Click="BtnEditAlbum_Click" Grid.Column="1" VerticalAlignment="Center" Margin="2">Edit</Button>-->
+            </Grid>
+        </DataTemplate>
+        <DataTemplate x:Key="SongBoxTemplate">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="3*"></ColumnDefinition>
+                    <ColumnDefinition></ColumnDefinition>
+                    <ColumnDefinition></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" VerticalAlignment="Center" Text="{Binding (local:Song.SongName)}"></TextBlock>
+                <Button x:Name="DeleteSongBtn" Click="BtnDeleteSong_Click" Grid.Column="2" VerticalAlignment="Center" Margin="2">Delete</Button>
+                <!--<Button x:Name="EditSongBtn" Click="BtnEditSong_Click" Grid.Column="1" VerticalAlignment="Center" Margin="2">Edit</Button>-->
+            </Grid>
+        </DataTemplate>
+    </Window.Resources>
     <TabControl>
         <TabItem Header="Search Artist" Height="30">
             <Grid Margin="10">
@@ -28,10 +65,10 @@
                     <Button x:Name="BtnSearchArtist" Content="Search" VerticalAlignment="Center" Width="60" Margin="10,0,0,0" Click="BtnSearchArtist_Click"/>
                 </StackPanel>
 
-                <Label Content="Artist" FontSize="30" Grid.Row="1" HorizontalAlignment="Center"/>
+                <Label Content="Artist" FontSize="30" Grid.Row="1" Grid.Column="0" HorizontalAlignment="Center"/>
                 <ListBox Name="LbxMatchingArtists" Grid.Row="2" Grid.Column="0" Grid.RowSpan="2" Margin="10" SelectionChanged="LbxMatchingArtists_SelectionChanged"/>
 
-                <TextBlock Name="TbkErrorOutput" TextWrapping="Wrap" FontSize="16" Grid.Column="1" Grid.ColumnSpan="2" VerticalAlignment="Center"/>
+                <TextBlock Name="TbkErrorOutput" TextWrapping="Wrap" FontSize="16" Grid.Column="1" Grid.Row="0" Grid.ColumnSpan="2" VerticalAlignment="Center"/>
 
                 <Label Content="Albums" FontSize="30" HorizontalAlignment="Center" Grid.Row="1" Grid.Column="1" VerticalAlignment="Center"/>
                 <ListBox Name="LbxMatchingAlbums" Grid.Row="2" Grid.Column="1" Grid.RowSpan="2" Margin="10" SelectionChanged="LbxMatchingAlbums_SelectionChanged"/>
@@ -55,28 +92,28 @@
 
                 </Grid.RowDefinitions>
                 <Label Content="Artist Info" FontSize="30" HorizontalAlignment="Center"/>
-                <ListBox Name="lbxAddArtists" Grid.Row="1" Margin="5"/>
-                <StackPanel Grid.Row="2" Orientation="Horizontal">
+                <ListBox Grid.Column="0" x:Name="LbxAddArtists" HorizontalContentAlignment="Stretch" ItemTemplate="{StaticResource ArtistBoxTemplate}" Grid.Row="1" Margin="5" SelectionChanged="LbxAddArtists_SelectionChanged"/>
+                <StackPanel Grid.Column="0" Grid.Row="2" Orientation="Horizontal">
                     <Label Content="Artist Name:" VerticalAlignment="Center"/>
-                    <TextBox Name="tbxAddArtistName" Margin="5" Width="200"/>
+                    <TextBox Name="TbxAddArtistName" Margin="5" Width="200"/>
                 </StackPanel>
-                <Button Name="btnAddArtist" Content="Create new artist" Grid.Row="3" Margin="5" Width="200"/>
+                <Button Grid.Column="0" Name="BtnAddArtist" Content="Create new artist" Grid.Row="3" Margin="5" Width="200" Click="BtnAddArtist_Click"/>
 
-                <Label Content="Artist Albums" FontSize="30" HorizontalAlignment="Center" Grid.Column="1"/>
-                <ListBox Name="lbxAddArtistAlbums" Grid.Row="1" Grid.Column="1" Margin="5"/>
+                <Label Grid.Row="0" Content="Artist Albums" FontSize="30" HorizontalAlignment="Center" Grid.Column="1"/>
+                <ListBox Name="LbxAddArtistAlbums" HorizontalContentAlignment="Stretch" ItemTemplate="{StaticResource AlbumBoxTemplate}" Grid.Row="1" Grid.Column="1" Margin="5" SelectionChanged="LbxAddArtistAlbums_SelectionChanged"/>
                 <StackPanel Orientation="Horizontal" Grid.Row="2" Grid.Column="1">
                     <Label Content="Album Name:" VerticalAlignment="Center"/>
-                    <TextBox Margin="5" Width="200"/>
+                    <TextBox x:Name="TbxAddAlbumName" Margin="5" Width="200"/>
                 </StackPanel>
-                <Button Name="btnAddAlbum" Content="Add album to artist" Grid.Row="3" Grid.Column="1" Margin="5" Width="200"/>
+                <Button Name="BtnAddAlbum" Content="Add album to artist" Grid.Row="3" Grid.Column="1" Margin="5" Width="200" Click="BtnAddAlbum_Click"/>
 
-                <Label Content="Artist Songs" FontSize="30" HorizontalAlignment="Center" Grid.Column="2"/>
-                <ListBox Name="lbxAddedSongs" Grid.Row="1" Grid.Column="2" Margin="5"/>
+                <Label Content="Artist Songs" FontSize="30" HorizontalAlignment="Center" Grid.Column="2" Grid.Row="0"/>
+                <ListBox Name="LbxAddedSongs" HorizontalContentAlignment="Stretch" ItemTemplate="{StaticResource SongBoxTemplate}" Grid.Row="1" Grid.Column="2" Margin="5"/>
                 <StackPanel Orientation="Horizontal" Grid.Row="2" Grid.Column="2">
                     <Label Content="Enter Song:" VerticalAlignment="Center"/>
-                    <TextBox Name="tbxAddSong" Margin="5" Width="200"/>
+                    <TextBox x:Name="TbxAddSongName" Margin="5" Width="200"/>
                 </StackPanel>
-                <Button Name="BtnAddSong" Content="Add song to selected album" Margin="5" Width="200" Grid.Row="3" Grid.Column="2"/>
+                <Button Name="BtnAddSong" Content="Add song to selected album" Margin="5" Width="200" Grid.Row="3" Grid.Column="2" Click="BtnAddSong_Click"/>
             </Grid>
         </TabItem>
     </TabControl>

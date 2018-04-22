@@ -3,30 +3,42 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Controls;
 using Amazon.DynamoDBv2.DataModel;
 
 namespace ArtistSearch
 {
-    class Artist
+    internal class Artist
     {
         public string ArtistName { get; set; }
-        public int ArtistID { get; set; }
+        public int ArtistId { get; set; }
 
         public List<Album> Albums { get; set; }
 
         public override string ToString()
         {
-            return this.ArtistName;
+            return ArtistName;
         }
+
     }
-    class Album
+
+    internal class Album
     {
         public string AlbumName { get; set; }
-        public List<string> Songs { get; set; }
+        public List<Song> Songs { get; set; }
 
         public override string ToString()
         {
-            return this.AlbumName;
+            return AlbumName;
+        }
+    }
+
+    internal class Song
+    {
+        public string SongName { get; set; }
+        public override string ToString()
+        {
+            return SongName;
         }
     }
 }
