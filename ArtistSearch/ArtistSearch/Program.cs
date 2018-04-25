@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,6 +11,10 @@ using Amazon;
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DocumentModel;
 using Amazon.DynamoDBv2.Model;
+using Newtonsoft.Json;
+using Amazon.S3;
+using Amazon.S3.Transfer;
+using Amazon.S3.Model;
 
 namespace ArtistSearch
 {
@@ -17,6 +22,41 @@ namespace ArtistSearch
     {
         private static readonly AmazonDynamoDBClient Client =
             new AmazonDynamoDBClient(new AmazonDynamoDBConfig {RegionEndpoint = RegionEndpoint.EUWest1});
+
+        #region GETS
+        public List<Artist> DbGetAllArtists()
+        {
+            try
+            {
+                //Load artist table
+                var table = Table.LoadTable(Client, "Artist");
+
+                //Scan filter and response
+                var filter = new ScanFilter();
+                filter.AddCondition("ArtistName", ScanOperator.IsNotNull);
+                var response = table.Scan(filter).GetNextSet();
+
+                //List to contain found artists
+                var foundArtists = new List<Artist>();
+
+                //Loop through each item in the response and map it to a new Artist in the artist list
+                foreach (var item in response)
+                {
+                    foundArtists.Add(new Artist()
+                    {
+                        ArtistName = item["ArtistName"],
+                        ArtistId = int.Parse(item["ArtistID"])
+                    });
+                }
+
+                return foundArtists;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+                return null;
+            }
+        }
 
         public List<Artist> DbGetArtists(string a)
         {
@@ -89,6 +129,40 @@ namespace ArtistSearch
             }
         }
 
+        public List<Song> DbGetSongs(Album album)
+        {
+            try
+            {
+                //Load songs table
+                var table = Table.LoadTable(Client, "Song");
+
+                //Filter for query. AlbumName column matches album input
+                var filter = new QueryFilter();
+                filter.AddCondition("AlbumName", QueryOperator.Equal, album.AlbumName);
+
+                //Response
+                var response = table.Query(filter).GetNextSet();
+
+                //List to contain found songs
+                var foundSongs = new List<Song>();
+
+                //Loop through each item in the response and map it to a new Song in the song list
+                foreach (var item in response)
+                {
+                    foundSongs.Add(new Song() { SongName = item["SongName"] });
+                }
+
+                return foundSongs;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+                return null;
+            }
+        }
+        #endregion
+
+        #region PUTS
         public void InsertArtist(string artistName)
         {
             //Random number generation for the ID
@@ -120,7 +194,9 @@ namespace ArtistSearch
                 ["SongName"] = songName.ToLower()
             });
         }
+        #endregion
 
+        #region DELETES
         public void DeleteArtist(Artist artist)
         {
             Client.DeleteItem(new DeleteItemRequest
@@ -159,73 +235,58 @@ namespace ArtistSearch
                 }
             });
         }
+        #endregion
 
-        public List<Artist> DbGetAllArtists()
+        #region BACKUP
+        public void BackupToS3()
         {
+            //Get all artists
+            List<Artist> artistList = DbGetAllArtists();
+
+            //Get each artists albums
+            foreach (var artist in artistList)
+            {
+                artist.Albums = DbGetAlbums(artist);
+
+                //Get each albums songs
+                foreach (var album in artist.Albums)
+                {
+                    album.Songs = DbGetSongs(album);
+                }
+            }
+
+            //Write artistList to json format
+            var json = JsonConvert.SerializeObject(artistList);
+
+            //Write json to file
+            string filename = ("./artist_backup_" + (DateTime.Now.Day) + "_" + DateTime.Now.Month + "_" + DateTime.Now.Year + ".json");
+            Console.WriteLine(filename);
+
+            using (StreamWriter sr = new StreamWriter(filename))
+            {
+                sr.WriteLine(json);
+
+                Console.WriteLine("artist list written to json file");
+            }
+
             try
             {
-                //Load artist table
-                var table = Table.LoadTable(Client, "Artist");
+                string bucketName = "artistlistbackupbucket";
 
-                //Scan filter and response
-                var filter = new ScanFilter();
-                filter.AddCondition("ArtistName", ScanOperator.IsNotNull);
-                var response = table.Scan(filter).GetNextSet();
+                TransferUtility fileTransfer =
+                    new TransferUtility(
+                        new AmazonS3Client(Amazon.RegionEndpoint.EUWest1));
 
-                //List to contain found artists
-                var foundArtists = new List<Artist>();
-
-                //Loop through each item in the response and map it to a new Artist in the artist list
-                foreach (var item in response)
-                {
-                    foundArtists.Add(new Artist()
-                    {
-                        ArtistName = item["ArtistName"],
-                        ArtistId = int.Parse(item["ArtistID"])
-                    });
-                }
-
-                return foundArtists;
+                fileTransfer.Upload(filename, bucketName);
+                Console.WriteLine("Upload complete");
+                
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                MessageBox.Show(ex.Message);
-                return null;
+                throw;
             }
         }
-
-        public List<Song> DbGetSongs(Album album)
-        {
-            try
-            {
-                //Load songs table
-                var table = Table.LoadTable(Client, "Song");
-
-                //Filter for query. AlbumName column matches album input
-                var filter = new QueryFilter();
-                filter.AddCondition("AlbumName", QueryOperator.Equal, album.AlbumName);
-
-                //Response
-                var response = table.Query(filter).GetNextSet();
-
-                //List to contain found songs
-                var foundSongs = new List<Song>();
-
-                //Loop through each item in the response and map it to a new Song in the song list
-                foreach (var item in response)
-                {
-                    foundSongs.Add(new Song() {SongName = item["SongName"]});
-                }
-
-                return foundSongs;
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-                return null;
-            }
-        }
-
+        #endregion
         //public void EditArtist(MainWindow main, Artist artist)
         //{
         //    var edit = new Edit() { Owner = main };

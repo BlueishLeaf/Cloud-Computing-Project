@@ -26,6 +26,7 @@ namespace ArtistSearch
         public MainWindow()
         {
             InitializeComponent();
+
             // Populate Artist list box on load
             LbxAddArtists.ItemsSource = _appInstance.DbGetAllArtists();
         }
@@ -101,6 +102,7 @@ namespace ArtistSearch
         }
         #endregion
 
+        #region Delete
         private void BtnDeleteArtist_Click(object sender, RoutedEventArgs e)
         {
             var buttonContext = ((Button) sender).DataContext;
@@ -138,7 +140,9 @@ namespace ArtistSearch
             MessageBox.Show("Song Deleted!");
             LbxAddedSongs.ItemsSource = _appInstance.DbGetSongs(selectedAlbum);
         }
+        #endregion
 
+        #region Edit
         private void BtnEditArtist_Click(object sender, RoutedEventArgs e)
         {
             //var buttonContext = ((Button)sender).DataContext;
@@ -168,5 +172,13 @@ namespace ArtistSearch
             //_appInstance.EditSong(this,selectedSong);
             //LbxAddedSongs.ItemsSource = _appInstance.DbGetSongs(selectedAlbum);
         }
+        #endregion
+
+        #region Backup
+        private void BtnBackupS3_Click(object sender, RoutedEventArgs e)
+        {
+            _appInstance.BackupToS3();
+        }
+        #endregion
     }
 }

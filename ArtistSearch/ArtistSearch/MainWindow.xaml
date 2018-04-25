@@ -116,5 +116,17 @@
                 <Button Name="BtnAddSong" Content="Add song to selected album" Margin="5" Width="200" Grid.Row="3" Grid.Column="2" Click="BtnAddSong_Click"/>
             </Grid>
         </TabItem>
+        <TabItem Header="Backup">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition Height="50"/>
+                    <RowDefinition Height="40"/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <Label Content="Backup Tables to S3 Bucket" Grid.Row="1" FontSize="30" HorizontalAlignment="Center"/>
+                <Button Content="Backup" Name="BtnBackupS3" Grid.Row="2" FontSize="20" HorizontalAlignment="Center" Width="200" Margin="5" Click="BtnBackupS3_Click"/>
+            </Grid>
+        </TabItem>
     </TabControl>
 </Window>
